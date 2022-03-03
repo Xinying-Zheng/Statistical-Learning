@@ -34,7 +34,8 @@ def getData(filename, labels):
     Y = []
     splits = []
     for i, label in enumerate(labels):
-        rows = np.where(df['label'] == label)
+        rows = np.where(df['label'] == label)  #will find the row index for lable 
+        
         data = np.array([df.iloc[row][1:].tolist() for row in rows[0]])
         X = np.vstack((X, data)) if i > 0 else data
         Y = np.hstack((Y, np.array([label-1] * data.shape[0]))) if i > 0 \
@@ -47,6 +48,7 @@ def getData(filename, labels):
 
 
 def sigmoid(x):
+    # this func. can generate a 'sigmoid array' for x array, not the single x value.
     """
     Parameters
     ----------
@@ -61,6 +63,7 @@ def sigmoid(x):
     note:
         To avoid overflow (for too small or large np.exp(i))
     """
+    # because the objective function of logistics regression can be formulated by a sigmoid func.
     return np.array([np.exp(i) / (1 + np.exp(i)) if i < 0 else 1 / (1 + np.exp(-i)) for i in x])
 
 def Ew(X, W, Y):
@@ -89,12 +92,14 @@ def Ew(X, W, Y):
 
     res1[np.isneginf(res1)] = 0.0
     res2[np.isneginf(res2)] = 0.0
+    # The above code set the negative infinity to zero.
     return -(Y.dot(res1) + (1-Y).dot(res2))
 
 def gradient(X, W, Y):
     return (sigmoid(X.dot(W)) - Y).T.dot(X)
 
 def predict(X, W):
+
     return sigmoid(X.dot(W))
 
 def confusion_M(X, W, Y):
@@ -103,6 +108,7 @@ def confusion_M(X, W, Y):
     predictions = (np.round(predictions))
     res = np.zeros((2, 2))
     for i in range(n):
+        # cout the number of "0->0", "0->1", "1->1" and "1->0"
         res[int(predictions[i])][int(Y[i])] += 1
     
     return res
@@ -111,6 +117,7 @@ def plot_M(M, title):
     f, ax = plt.subplots()
     sn.heatmap(M, annot=True, ax=ax)
     ax.set_title(title)
+
     
 def logistics_regression(X, Y, X_test, Y_test, lr = 1e-4, iterations=100):
     feature_len = X.shape[1]
@@ -125,6 +132,7 @@ def logistics_regression(X, Y, X_test, Y_test, lr = 1e-4, iterations=100):
     
     plt.figure()
     plt.plot(loss)
+    plt.show()
     
     print('testing : [loss : {:.3}]'.format(Ew(X_test, W, Y_test)))
     
